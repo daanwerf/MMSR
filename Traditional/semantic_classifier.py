@@ -22,10 +22,10 @@ def load_data():
     """
     # 8000 training samples, 2000 test samples
     x_train = np.empty((8000, 768, 1, 1), dtype='uint8')
-    y_train = np.empty((8000), dtype='uint8')
+    y_train = np.empty((8000,), dtype='uint8')
 
     x_test = np.empty((2000, 768, 1, 1), dtype='uint8')
-    y_test = np.empty((2000), dtype='uint8')
+    y_test = np.empty((2000,), dtype='uint8')
 
     count = 1
     train_count = 0
@@ -35,13 +35,16 @@ def load_data():
         for j in range(100):
             filename = str(i) + "_" + str(count)
             p = np.load('featuredb/' + filename + ".npy")
+            feat_vec = np.empty((768, 1, 1), dtype='uint8')
+            for k in range(len(p)):
+                feat_vec[k] = np.reshape(p[k], (1, 1))
 
             if j < 80:
-                x_train[train_count] = p
+                x_train[train_count] = feat_vec
                 y_train[train_count] = i
                 train_count = train_count + 1
             else:
-                x_test[test_count] = p
+                x_test[test_count] = feat_vec
                 y_test[test_count] = i
                 test_count = test_count + 1
 
