@@ -2,9 +2,11 @@ import numpy as np
 from Traditional.Image import Image
 import collections
 import cv2
+from pprint import pprint
 
 
 def calculate_difference(p1, feature_vector):
+    print(feature_vector.shape)
     return np.sum(np.absolute(p1.get_feature_vector() - feature_vector)).astype(int)
 
 def calculate_difference_std(p1, feature_vector):
@@ -29,9 +31,6 @@ def get_best_images(p1):
 
     return collections.OrderedDict(sorted(dict.items()))
 
-
-
-
 def show_top_10_images(dict):
     for i in range(len(dict)):
         path = r"C:\Users\daanv\PycharmProjects\imageretrieval\Corel100" + "\\" + dict[list(dict)[i]] + ".jpg"
@@ -43,9 +42,10 @@ def show_top_10_images(dict):
         if i == 10:
             break
 
-
 p1 = Image(9,36)
 
-d = get_best_images(p1)
-show_top_10_images(d)
+pprint(load_data())
+
+#d = get_best_images(p1)
+#show_top_10_images(d)
 
