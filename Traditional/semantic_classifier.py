@@ -21,10 +21,10 @@ def load_data():
         Tuple of Numpy arrays: `(x_train, y_train), (x_test, y_test)`.
     """
     # 8000 training samples, 2000 test samples
-    x_train = np.empty((8000, 768, 1), dtype='uint8')
+    x_train = np.empty((8000, 768, 1, 1), dtype='uint8')
     y_train = np.empty((8000), dtype='uint8')
 
-    x_test = np.empty((2000, 768, 1), dtype='uint8')
+    x_test = np.empty((2000, 768, 1, 1), dtype='uint8')
     y_test = np.empty((2000), dtype='uint8')
 
     count = 1
@@ -50,7 +50,7 @@ def load_data():
     return (x_train, y_train), (x_test, y_test)
 
 batch_size = 32
-num_classes = 10
+num_classes = 100
 epochs = 50
 num_predictions = 20
 save_dir = os.path.join(os.getcwd(), 'saved_models')
@@ -67,17 +67,17 @@ y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
-model.add(Conv2D(32, (3, 3), padding='same',
+model.add(Conv2D(768, 1, padding='same',
                  input_shape=x_train.shape[1:]))
 model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
+model.add(Conv2D(768, 1))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-model.add(Conv2D(64, (3, 3), padding='same'))
+model.add(Conv2D(1536, 1, padding='same'))
 model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3)))
+model.add(Conv2D(1536, 1))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
