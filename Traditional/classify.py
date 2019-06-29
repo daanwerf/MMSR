@@ -1,13 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_validate, train_test_split
+from sklearn.model_selection import cross_validate
 import numpy as np
 import glob
 import re
-import pickle
+from sklearn.externals import joblib
 
-trainSplit = 0.9
+trainSplit = 0.8
 classes = 100
 samplesClass = 100
 def getValidationScore(classifier, features, labels):
@@ -22,16 +21,16 @@ def getTestLabels(classifier, train, trainLabel, test):
 def getScores(predicted, testLabels):
     correctArray = [0 for i in range(classes)]
     predictionsClass = [0 for i in range(classes)]
-    for i in range(len(testLabel)):
+    for i in range(len(testLabels)):
         predictionsClass[int(predicted[i])] += 1
         if predicted[i] == testLabels[i]:
             correctArray[int(predicted[i])] += 1
-    return {"precision" : [correctArray[i] / predictionsClass[i] for i in correctArray],
-            "recall" : [correctArray[i] / 100*trainSplit for i in correctArray]}
+    return {"precision" : [correctArray[i] / predictionsClass[i] for i in range(len(correctArray))],
+            "recall" : [correctArray[i] / 100*(1-trainSplit) for i in range(len(correctArray))]}
 def loadModel(filename):
     classifier = None
     with open(filename, 'rb'):
-        classifier = pickle.load(filename)
+        classifier = joblib.load(filename)
     return classifier
 
 features = np.zeros((10000, 768))
@@ -54,17 +53,16 @@ for run in range(runs):
     testLabel = labels[testIndices]
 
     models = [RandomForestClassifier(n_estimators=128, random_state=0)]
-    names = ["Random_Forest"]
-    scaler = StandardScaler().fit(features)
-
+    names = ["random_forest"]
     for index, model in enumerate(models):
-        predicted = getTestLabels(model,scaler.transform(train),trainLabel, scaler.transform(test))
+        predicted = getTestLabels(model,train,trainLabel, test)
         score = getScores(predicted, testLabel)
         scores['precision'] += np.mean(score['precision'])
         scores['recall'] += np.mean(score['recall'])
-        if bestPerformance > (scores['precision'] + scores['recall']):
-            pickle.dump(model, open(names[index], 'wb'))
-            bestPerforamnce = (scores['precision'] + scores['recall'])
+        if bestPerformance > (np.mean(score['precision'])+ np.mean(score['recall'])):
+            print("Save best model")
+            joblib.dump(model, "{}.pkl".format(names[index]))
+            bestPerformance = (np.mean(score['precision']) + np.mean(score['recall']))
 
 print("Average precision is {} and average recall is {}".
       format(scores['precision'] / runs, scores['recall'] / runs))
