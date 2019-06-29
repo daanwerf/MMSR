@@ -24,6 +24,9 @@ class Image:
     def get_image_category(self):
         return self.category
 
+    def get_image_rgb(self):
+        return self.rgb_img
+
     def show_image_rgb(self):
         cv2.imshow('image', self.rgb_img)
         cv2.waitKey(0)

@@ -2,50 +2,56 @@ import numpy as np
 from Traditional.Image import Image
 import collections
 import cv2
-from pprint import pprint
+from sklearn.externals import joblib
+import matplotlib
+matplotlib.rcParams['figure.dpi']= 300
+import matplotlib.pyplot as plt
 
 
 def calculate_difference(p1, feature_vector):
-    print(feature_vector.shape)
     return np.sum(np.absolute(p1.get_feature_vector() - feature_vector)).astype(int)
 
 def calculate_difference_std(p1, feature_vector):
     return np.std(np.absolute(p1.get_feature_vector() - feature_vector)).astype(int)
 
 
-def get_best_images(p1):
+def get_best_images(classifier, p1):
     dict = {}
-    heap = []
-    k = 10  # maximum amount of retrieved images
 
-    count = 1
+    image_category = int(np.asscalar(classifier.predict(p1.get_feature_vector().transpose())))
+
+    count = image_category*100 + 1
     for i in range(100):
-        print(str(i) + "%")
-        for j in range(100):
-            filename = str(i) + "_" + str(count)
-            p = np.load('featuredb/' + filename + ".npy")
-            count = count + 1
-            distance = calculate_difference(p1, p)
+        filename = str(image_category) + "_" + str(count)
+        p = np.load('featuredb/' + filename + ".npy")
+        count = count + 1
+        distance = calculate_difference(p1, p)
 
-            dict[distance] = filename
+        dict[distance] = filename
 
     return collections.OrderedDict(sorted(dict.items()))
 
-def show_top_10_images(dict):
-    for i in range(len(dict)):
+def show_top_images(p):
+    plt.axis('off')
+    plt.imshow(cv2.cvtColor(p.get_image_rgb(), cv2.COLOR_BGR2RGB))
+
+
+    classifier = joblib.load('random_forest.pkl')
+    dict = get_best_images(classifier, p)
+
+    fig = plt.figure(figsize=(10, 10))
+    columns = 4
+    rows = 5
+
+    for i in range(1, columns * rows + 1):
         path = r"C:\Users\daanv\PycharmProjects\imageretrieval\Corel100" + "\\" + dict[list(dict)[i]] + ".jpg"
         img = cv2.imread(path, 1)
-        cv2.imshow('Image ' + str(i), img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        fig.add_subplot(rows, columns, i)
 
-        if i == 10:
-            break
+        plt.axis('off')
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
-p1 = Image(9,36)
+    plt.show()
 
-pprint(load_data())
-
-#d = get_best_images(p1)
-#show_top_10_images(d)
-
+p = Image(43, 76)
+show_top_images(p)
