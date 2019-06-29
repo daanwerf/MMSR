@@ -25,8 +25,10 @@ def getScores(predicted, testLabels):
         predictionsClass[int(predicted[i])] += 1
         if predicted[i] == testLabels[i]:
             correctArray[int(predicted[i])] += 1
+    # Assume we have same amount of test objects for each class
+    positives = len(testLabels) / classes
     return {"precision" : [correctArray[i] / predictionsClass[i] for i in range(len(correctArray))],
-            "recall" : [correctArray[i] / 100*(1-trainSplit) for i in range(len(correctArray))]}
+            "recall" : [correctArray[i] / positives for i in range(len(correctArray))]}
 def loadModel(filename):
     classifier = None
     with open(filename, 'rb'):
@@ -51,8 +53,8 @@ for run in range(runs):
     trainLabel = labels[trainIndices]
     test = features[testIndices]
     testLabel = labels[testIndices]
-
-    models = [RandomForestClassifier(n_estimators=128, random_state=0)]
+    # More estimator is generally better, but it becomes slower and some point it isnt worth it anymore to expand the estimators
+    models = [RandomForestClassifier(n_estimators=256, random_state=0)]
     names = ["random_forest"]
     for index, model in enumerate(models):
         predicted = getTestLabels(model,train,trainLabel, test)
