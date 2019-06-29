@@ -28,6 +28,11 @@ def getScores(predicted, testLabels):
             correctArray[int(predicted[i])] += 1
     return {"precision" : [correctArray[i] / predictionsClass[i] for i in correctArray],
             "recall" : [correctArray[i] / 100*trainSplit for i in correctArray]}
+def loadModel(filename):
+    classifier = None
+    with open(filename, 'rb'):
+        classifier = pickle.load(filename)
+    return classifier
 
 features = np.zeros((10000, 768))
 labels = np.zeros(10000)
@@ -37,6 +42,7 @@ for index, file in enumerate(glob.glob("featuredb/*.npy")):
 
 runs = 10
 scores = {"precision" : 0, "recall" : 0}
+bestPerformance = 2**32
 for run in range(runs):
     print("Run {}".format(run))
     # Fair splitting can be done more efficient.
@@ -51,14 +57,14 @@ for run in range(runs):
     names = ["Random_Forest"]
     scaler = StandardScaler().fit(features)
 
-    # TODO save best model
-    save = True
     for index, model in enumerate(models):
         predicted = getTestLabels(model,scaler.transform(train),trainLabel, scaler.transform(test))
-        if save: pickle.dump(model, open(names[index], 'wb'))
         score = getScores(predicted, testLabel)
         scores['precision'] += np.mean(score['precision'])
         scores['recall'] += np.mean(score['recall'])
+        if bestPerformance > (scores['precision'] + scores['recall']):
+            pickle.dump(model, open(names[index], 'wb'))
+            bestPerforamnce = (scores['precision'] + scores['recall'])
 
 print("Average precision is {} and average recall is {}".
       format(scores['precision'] / runs, scores['recall'] / runs))
