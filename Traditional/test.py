@@ -8,6 +8,7 @@ matplotlib.rcParams['figure.dpi']= 300
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
+import random
 
 
 def calculate_difference(p1, feature_vector):
@@ -17,16 +18,16 @@ def calculate_difference(p1, feature_vector):
 def get_best_images(classifier, image):
     dict = {}
 
-    i_category = int(np.asscalar(classifier.predict(image.get_feature_vector().transpose())))
+    i_classifier_category = int(np.asscalar(classifier.predict(image.get_feature_vector().transpose())))
 
     for i in range(100):
         print(str(i) + "%")
         for j in range(1, 101):
             image2 = Image(i, j)
             i2_feature_vector = image2.get_feature_vector()
-            i2_category = int(np.asscalar(classifier.predict(i2_feature_vector.transpose())))
+            i2_classifier_category = int(np.asscalar(classifier.predict(i2_feature_vector.transpose())))
 
-            if i2_category == i_category:
+            if i2_classifier_category == i_classifier_category:
                 distance = calculate_difference(image, i2_feature_vector)
                 dict[distance] = image2.get_file_name()
 
@@ -54,5 +55,35 @@ def show_top_images(p):
 
     plt.show()
 
-p = Image(6, 21)
-show_top_images(p)
+def calculate_precision_and_recall_for_category(classifier, category, image_amount = 15):
+    retrieved_count = 0
+    relevant_count = 0
+
+    for k in range(0, image_amount):
+        image = Image(category, random.randint(0, 100))
+
+        i_classifier_category = int(np.asscalar(classifier.predict(image.get_feature_vector().transpose())))
+
+        print("Run " + str(k+1) + " of " + str(image_amount))
+        for i in range(100):
+            print(str(i) + "%")
+            for j in range(1, 101):
+                image2 = Image(i, j)
+                i2_feature_vector = image2.get_feature_vector()
+                i2_classifier_category = int(np.asscalar(classifier.predict(i2_feature_vector.transpose())))
+
+                if i2_classifier_category == i_classifier_category:
+                    retrieved_count = retrieved_count + 1
+                    if image2.get_image_category() == image.get_image_category():
+                        relevant_count = relevant_count + 1
+
+    print("retrieved: " + str(retrieved_count) + " relevant: " + str(relevant_count) + " total relevant: " + str(image_amount*100))
+    return relevant_count / retrieved_count, relevant_count / (image_amount*100)
+
+#p = Image(6, 21)
+#show_top_images(p)
+
+classifier = joblib.load('random_forest.pkl')
+precision, recall = calculate_precision_and_recall_for_category(classifier, 56)
+print("Precision " + str(precision))
+print("Recall: " + str(recall))

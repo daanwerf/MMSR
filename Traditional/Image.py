@@ -14,7 +14,6 @@ class Image:
 
         img_path = r"C:\Users\daanv\PycharmProjects\imageretrieval\Corel100" + "\\" + self.category + "_" + self.iid \
                    + ".jpg"
-        print(img_path)
         self.rgb_img = cv2.imread(img_path , 1)
         self.ycrcb_img = cv2.cvtColor(self.rgb_img, cv2.COLOR_BGR2YCR_CB)
 
