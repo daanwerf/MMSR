@@ -21,6 +21,9 @@ class Image:
     def get_image_id(self):
         return self.iid
 
+    def get_file_name(self):
+        return str(self.category) + "_" + str(self.iid)
+
     def get_image_category(self):
         return self.category
 

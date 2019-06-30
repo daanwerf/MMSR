@@ -6,28 +6,29 @@ from sklearn.externals import joblib
 import matplotlib
 matplotlib.rcParams['figure.dpi']= 300
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def calculate_difference(p1, feature_vector):
     return np.sum(np.absolute(p1.get_feature_vector() - feature_vector)).astype(int)
 
-def calculate_difference_std(p1, feature_vector):
-    return np.std(np.absolute(p1.get_feature_vector() - feature_vector)).astype(int)
 
-
-def get_best_images(classifier, p1):
+def get_best_images(classifier, image):
     dict = {}
 
-    image_category = int(np.asscalar(classifier.predict(p1.get_feature_vector().transpose())))
+    i_category = int(np.asscalar(classifier.predict(image.get_feature_vector().transpose())))
 
-    count = image_category*100 + 1
     for i in range(100):
-        filename = str(image_category) + "_" + str(count)
-        p = np.load('featuredb/' + filename + ".npy")
-        count = count + 1
-        distance = calculate_difference(p1, p)
+        print(str(i) + "%")
+        for j in range(1, 101):
+            image2 = Image(i, j)
+            i2_feature_vector = image2.get_feature_vector()
+            i2_category = int(np.asscalar(classifier.predict(i2_feature_vector.transpose())))
 
-        dict[distance] = filename
+            if i2_category == i_category:
+                distance = calculate_difference(image, i2_feature_vector)
+                dict[distance] = image2.get_file_name()
 
     return collections.OrderedDict(sorted(dict.items()))
 
@@ -53,5 +54,5 @@ def show_top_images(p):
 
     plt.show()
 
-p = Image(43, 76)
+p = Image(6, 21)
 show_top_images(p)

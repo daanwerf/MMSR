@@ -6,7 +6,7 @@ import glob
 import re
 from sklearn.externals import joblib
 
-trainSplit = 0.8
+trainSplit = 0.7
 classes = 100
 samplesClass = 100
 def getValidationScore(classifier, features, labels):
