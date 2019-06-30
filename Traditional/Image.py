@@ -2,9 +2,9 @@ from __future__ import print_function
 from __future__ import division
 
 import cv2
-import os
 from pywt import wavedec
 import numpy as np
+
 
 class Image:
 
@@ -12,7 +12,7 @@ class Image:
         self.category = str(category)
         self.iid = str(iid + category*100)
 
-        img_path = r"C:\Users\daanv\PycharmProjects\imageretrieval\Corel100" + "\\" + self.category + "_" + self.iid \
+        img_path = r"Corel100" + "\\" + self.category + "_" + self.iid \
                    + ".jpg"
         self.rgb_img = cv2.imread(img_path , 1)
         self.ycrcb_img = cv2.cvtColor(self.rgb_img, cv2.COLOR_BGR2YCR_CB)
@@ -145,12 +145,13 @@ class Image:
         hist_h = 400
         bin_w = int(round(hist_w / histSize))
         histImage = np.zeros((hist_h, hist_w, 3), dtype=np.uint8)
-        cv2.normalize(self.compute_b_histogram(), self.compute_b_histogram(), alpha=0, beta=hist_h, norm_type=cv2.NORM_MINMAX)
+        cv2.normalize(self.compute_b_histogram(), self.compute_b_histogram(), alpha=0, beta=hist_h,
+                      norm_type=cv2.NORM_MINMAX)
         for i in range(1, histSize):
             cv2.line(histImage, (bin_w * (i - 1), hist_h - int(np.round(self.compute_b_histogram()[i - 1]))),
                     (bin_w * (i), hist_h - int(np.round(self.compute_b_histogram()[i]))),
                     (255, 0, 0), thickness=2)
-        cv2.imshow('calcHist Demo', histImage)
+        cv2.imshow('B channel histogram', histImage)
         cv2.waitKey()
 
     def show_g_histogram(self):
@@ -165,7 +166,7 @@ class Image:
             cv2.line(histImage, (bin_w * (i - 1), hist_h - int(np.round(self.compute_g_histogram()[i - 1]))),
                      (bin_w * (i), hist_h - int(np.round(self.compute_g_histogram()[i]))),
                      (0, 255, 0), thickness=2)
-        cv2.imshow('calcHist Demo', histImage)
+        cv2.imshow('G channel histogram', histImage)
         cv2.waitKey()
 
     def show_r_histogram(self):
@@ -179,7 +180,7 @@ class Image:
             cv2.line(histImage, (bin_w * (i - 1), hist_h - int(np.round(self.compute_r_histogram()[i - 1]))),
                     (bin_w * (i), hist_h - int(np.round(self.compute_r_histogram()[i]))),
                     (0, 0, 255), thickness=2)
-        cv2.imshow('calcHist Demo', histImage)
+        cv2.imshow('R channel histogram', histImage)
         cv2.waitKey()
 
     def show_total_histogram(self):
@@ -188,9 +189,12 @@ class Image:
         hist_h = 400
         bin_w = int(round(hist_w / histSize))
         histImage = np.zeros((hist_h, hist_w, 3), dtype=np.uint8)
-        cv2.normalize(self.compute_b_histogram(), self.compute_b_histogram(), alpha=0, beta=hist_h, norm_type=cv2.NORM_MINMAX)
-        cv2.normalize(self.compute_g_histogram(), self.compute_g_histogram(), alpha=0, beta=hist_h, norm_type=cv2.NORM_MINMAX)
-        cv2.normalize(self.compute_r_histogram(), self.compute_r_histogram(), alpha=0, beta=hist_h, norm_type=cv2.NORM_MINMAX)
+        cv2.normalize(self.compute_b_histogram(), self.compute_b_histogram(), alpha=0, beta=hist_h,
+                      norm_type=cv2.NORM_MINMAX)
+        cv2.normalize(self.compute_g_histogram(), self.compute_g_histogram(), alpha=0, beta=hist_h,
+                      norm_type=cv2.NORM_MINMAX)
+        cv2.normalize(self.compute_r_histogram(), self.compute_r_histogram(), alpha=0, beta=hist_h,
+                      norm_type=cv2.NORM_MINMAX)
         for i in range(1, histSize):
             cv2.line(histImage, (bin_w * (i - 1), hist_h - int(np.round(self.compute_b_histogram()[i - 1]))),
                     (bin_w * (i), hist_h - int(np.round(self.compute_b_histogram()[i]))),
@@ -201,7 +205,7 @@ class Image:
             cv2.line(histImage, (bin_w * (i - 1), hist_h - int(np.round(self.compute_r_histogram()[i - 1]))),
                     (bin_w * (i), hist_h - int(np.round(self.compute_r_histogram()[i]))),
                     (0, 0, 255), thickness=2)
-        cv2.imshow('calcHist Demo', histImage)
+        cv2.imshow('RGB histogram', histImage)
         cv2.waitKey()
 
     def get_b_hist_dwt(self):
