@@ -2,17 +2,10 @@ import torch
 import torchvision.models as models
 import torchvision.transforms as transforms
 import torch.nn as nn
-from torch.autograd import Variable
 import glob
-import copy
 from PIL import Image
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
 import re
-import pickle
-import os
 
 def getModel(cnn, lastLayer):
     model = nn.Sequential()
