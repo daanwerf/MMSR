@@ -5,7 +5,7 @@ import re
 from sklearn.model_selection import cross_validate
 
 classes = 100
-classifier = joblib.load("random_forest.pkl")
+classifier = joblib.load("random_forest2.pkl")
 features = np.zeros((10000, 768))
 labels = np.zeros(10000)
 testSplit = 0.1
