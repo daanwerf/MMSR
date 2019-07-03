@@ -6,7 +6,7 @@ import glob
 import re
 from sklearn.externals import joblib
 
-trainSplit = 0.8
+trainSplit = 0.7
 classes = 100
 samplesClass = 100
 def getValidationScore(classifier, features, labels):
@@ -54,7 +54,7 @@ for run in range(runs):
     test = features[testIndices]
     testLabel = labels[testIndices]
     # More estimator is generally better, but it becomes slower and some point it isnt worth it anymore to expand the estimators
-    models = [RandomForestClassifier(n_estimators=256, random_state=0)]
+    models = [RandomForestClassifier(n_estimators=128, random_state=0)]
     names = ["random_forest"]
     for index, model in enumerate(models):
         predicted = getTestLabels(model,train,trainLabel, test)
