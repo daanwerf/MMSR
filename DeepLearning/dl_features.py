@@ -62,17 +62,13 @@ def imToTrain(im):
     im = im.unsqueeze(0)
     return im
 
-path = "D:/Semester2/MMSR/Corel100/*.jpg"
+path = "../Corel100/*.jpg"
 layer = 'linear_1'
 directoryName = layer+"_features"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = models.vgg19_bn(pretrained=True).eval()
 #model = getModel(pretrained, layer)
 model.to(device)
-try:
-    os.makedirs(directoryName)
-except:
-    print("Directory {} already exists".format(layer))
 images = 0
 pattern = "[0-9]+_[0-9]+"
 for file in glob.glob(path):
