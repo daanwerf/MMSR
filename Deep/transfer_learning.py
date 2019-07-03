@@ -36,7 +36,6 @@ except:
     print("Directory {} already exists".format(layer))
 images = 0
 pattern = "[0-9]+_[0-9]+"
-dict = {}
 for file in glob.glob(path):
     with Image.open(file) as image:
         try:
