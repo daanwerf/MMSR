@@ -42,14 +42,14 @@ def getModel(cnn, lastLayer):
                 model.add_module(name, layer)
                 if name == lastLayer:
                     return  model
-        if 'linear' in lastLayer:
+        if isinstance(module, nn.AdaptiveAvgPool2d):
             # Between convulution module and linear module is a between layer
             # Only add if you want to go the the linear module
             model.add_module("avgpool_", module)
 
     return model
 
-imgSize = 256
+imgSize = 224
 classes = 10
 transform = transforms.Compose([
     transforms.Resize((imgSize,imgSize)),
@@ -58,16 +58,16 @@ transform = transforms.Compose([
 ])
 def imToTrain(im):
     im = transform(im)
+    # Set it into a new batch dimension
     im = im.unsqueeze(0)
-    im = Variable(im)
     return im
 
 path = "D:/Semester2/MMSR/Corel100/*.jpg"
 layer = 'linear_1'
 directoryName = layer+"_features"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-pretrained = models.vgg19_bn(pretrained=True).eval()
-model = getModel(pretrained, layer)
+model = models.vgg19_bn(pretrained=True).eval()
+#model = getModel(pretrained, layer)
 model.to(device)
 try:
     os.makedirs(directoryName)
@@ -81,11 +81,10 @@ for file in glob.glob(path):
             image = imToTrain(image)
             if torch.cuda.is_available():
                 image = image.cuda()
-            features = model(image)
+            features = model.avgpool(model.features((image))).reshape(-1)
+            numpyFeature = features.detach().cpu().numpy()
             name = re.findall(pattern, file)[0]
-            torch.save(features, directoryName+"/{}.pt".format(name))
+            np.save(name, numpyFeature)
         except Exception as ex:
             print("Could not make feature for image {} with exception {}".format(file, ex))
 
-# TODO examples mse loss is below
-# normalizedMse = F.mse_loss(torch_feature1, torch_feature2)
