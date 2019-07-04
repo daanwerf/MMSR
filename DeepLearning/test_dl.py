@@ -8,8 +8,6 @@ import re
 import pickle
 
 classes = 100
-
-
 def getScores(predicted, testLabels):
     correctArray = [0 for i in range(classes)]
     predictionsClass = [0 for i in range(classes)]
@@ -19,22 +17,24 @@ def getScores(predicted, testLabels):
             correctArray[int(predicted[i])] += 1
     # Assume we have same amount of test objects for each class
     positives = len(testLabels) / classes
-    return {"precision": [correctArray[i] / predictionsClass[i] for i in range(len(correctArray))],
-            "recall": [correctArray[i] / positives for i in range(len(correctArray))]}
-
+    return {"precision" : [correctArray[i] / predictionsClass[i] for i in range(len(correctArray))],
+            "recall" : [correctArray[i] / positives for i in range(len(correctArray))]}
 
 path = "db_features/*.npy"
 pattern = "[0-9]+"
 data = []
+labelsInterest = {56 : [], 4 : [], 34 : [], 16 : [], 45 : [], 61: [], 92: [], 90: [], 6: [], 55 : []}
+indexToFile = {}
 for index, file in enumerate(glob.glob(path)):
     label = int(re.findall(pattern, file)[0])
+    indexToFile[index] = file
+    if label in labelsInterest:
+        if len(labelsInterest[label]) < 5:
+            labelsInterest[label].append((index, file))
     data.append([np.load(file), label])
+
 featureDimension = 25088
-with open('validation.pkl', 'rb') as file:
-    test = pickle.load(file)
-print(len(test))
-testloader = torch.utils.data.DataLoader(test, shuffle=True, batch_size=1)
-testloader = torch.utils.data.DataLoader(data, shuffle=True, batch_size=1)
+testloader = torch.utils.data.DataLoader(data, shuffle=False, batch_size=1)
 classifier = nn.Sequential(
     nn.Linear(featureDimension, 4096),
     nn.ReLU(inplace=True),
@@ -52,20 +52,23 @@ classifier.load_state_dict(classifierState)
 errors = 0
 total = 0
 labelArray = []
-predictedArray = []
+output = []
+index = 0
 with torch.no_grad():
     for data in testloader:
         images, labels = data
+        trueLabel = int(labels.tolist()[0])
         if torch.cuda.is_available():
             images = images.cuda()
             labels = labels.cuda()
         outputs = classifier(images)
         _, predicted = torch.max(outputs.data, 1)
-        labelArray.append(labels.tolist()[0])
-        predictedArray.append(predicted.tolist()[0])
+        label = int(predicted.tolist()[0])
+        if label in labelsInterest:
+            output.append((indexToFile[index], trueLabel, label, outputs))
+        index+=1
         total += labels.size(0)
         errors += (predicted != labels).sum().item()
 
-print("error rate is {}".format(errors / total))
-score = getScores(predictedArray, labelArray)
-print("Average Precision is {} and Average Recall is {}".format(np.mean(score['precision']), np.mean(score['recall'])))
+with open("outputs.pkl", 'wb') as file:
+    pickle.dump(output, file)

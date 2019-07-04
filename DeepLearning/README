@@ -1,0 +1,8 @@
+First run test_del.py
+Return output of entire dataset where each row is (indexToFile[index], trueLabel, label, outputs (vector))
+
+Second top20.py
+Returns top20 results for 5 search images per 10 classes
+
+Demo.py
+Save images top20; set for the first class now.
