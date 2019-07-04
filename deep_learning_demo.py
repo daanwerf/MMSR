@@ -92,7 +92,7 @@ def calculate_precision_and_recall_for_category(category = 11, first_x_images = 
 
 # Uncomment this line to get a visual overview of the 20 most for an Image with the first argument being the
 # category (0 - 99) and the second argument the index of the picture (1 - 100)
-show_top_images(Image(2, 64))
+show_top_images(Image(18, 22))
 
 
 # Uncomment this line to find the precision and recall of this method for a certain category

@@ -18,7 +18,7 @@ def calculate_normalized_difference(tr_feature_vector1, tr_feature_vector2, dl_f
 def get_best_images(tr_classifier, dl_classifier, image):
     dict = {}
 
-    i_tr_feature_vector = image.get_traditional_feature_vector_from_db()
+    i_tr_feature_vector = image.get_feature_vector()
     i_dl_feature_vector = image.get_deep_learning_feature_vector_from_db()
 
     i_tr_classifier_category = int(np.asscalar(tr_classifier.predict(i_tr_feature_vector.transpose())))
@@ -33,13 +33,13 @@ def get_best_images(tr_classifier, dl_classifier, image):
                 print("skipped broken image")
                 continue
 
-            i2_tr_feature_vector = image2.get_traditional_feature_vector_from_db()
+            i2_tr_feature_vector = image2.get_feature_vector()
             i2_tr_classifier_category = int(np.asscalar(tr_classifier.predict(i2_tr_feature_vector.transpose())))
 
             i2_dl_feature_vector = np.reshape(image2.get_deep_learning_feature_vector_from_db(), (-1, 1))
             i2_dl_classifier_category = int(np.asscalar(dl_classifier.predict(i2_dl_feature_vector.transpose())))
 
-            if i2_tr_classifier_category == i2_dl_classifier_category == i_tr_classifier_category:
+            if i2_tr_classifier_category == i2_dl_classifier_category == i_dl_classifier_category:
                 distance = calculate_normalized_difference(i2_tr_feature_vector, i_tr_feature_vector, i2_dl_feature_vector, i_dl_feature_vector)
                 dict[distance] = image2.get_file_name()
 
@@ -100,7 +100,7 @@ def calculate_precision_and_recall_for_category(category = 16, first_x_images = 
 
 # Uncomment this line to get a visual overview of the 20 most for an Image with the first argument being the
 # category (0 - 99) and the second argument the index of the picture (1 - 100)
-show_top_images(Image(2, 64))
+show_top_images(Image(61, -6100))
 
 
 # Uncomment this line to find the precision and recall of this method for a certain category
