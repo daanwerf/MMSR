@@ -4,6 +4,8 @@ from __future__ import division
 import cv2
 from pywt import wavedec
 import numpy as np
+import os
+import re
 
 
 class Image:
@@ -223,5 +225,13 @@ class Image:
     def get_feature_vector(self):
         return np.concatenate((self.get_b_hist_dwt(), self.get_g_hist_dwt(), self.get_r_hist_dwt()))
 
+    def get_traditional_feature_vector_from_db(self):
+        return np.load('Traditional/featuredb/' + self.category + "_" + self.iid + ".npy")
+
     def save_feature_vector(self):
         np.save('featuredb/' + self.category + "_" + self.iid, self.get_feature_vector())
+
+    def get_deep_learning_feature_vector_from_db(self):
+        return np.load('DeepLearning/db_features/' + self.category + "_" + self.iid + ".npy")
+
+
