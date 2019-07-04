@@ -55,7 +55,7 @@ def imToTrain(im):
     im = im.unsqueeze(0)
     return im
 
-path = "../Corel100/*.jpg"
+path = "../Images/*.jpg"
 layer = 'linear_1'
 directoryName = layer+"_features"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
